@@ -1,0 +1,20 @@
+---
+title: "Homework"
+output: github_document
+---
+
+```{r}
+library(tidyverse)
+```
+
+## Question 2
+```{r}
+mr_trash_wheel_df = 
+  readxl::read_excel("data/202309_Trash_Wheel_Collection_Data.xlsx", sheet = 1, range = "A2:N586") |> 
+  janitor::clean_names() |> 
+  select(-month,-year)|> 
+  mutate(
+    homes_powered = weight_tons*500/30
+  )
+```
+
