@@ -94,8 +94,9 @@ baseline_df =
 )
 ```
 
-* Discuss important steps in the import process and relevant features of the dataset
-According to the important process, we can see that we filter all information that meet this study inclusion criteria. Firstly, we delete the age onset data which is larger than current because current age would not be large than age at onset since this study need those participants who get disease after joining the study. Secondly, when we omit the missing data with only showing data of , we filter those participants who lost follow-up during the study. These steps are important, because
+* Discuss important steps in the import process and relevant features of the dataset.
+
+At first, I delete the first row as this is label but not data, which is not contained variable names for each column, using **skip function**. Then, I omit the data of those participants who didn't meet the inclusion criteria (the data of current ages are larger than the data of age at onset and those who don't develop MCI), since the study need to follow up participants and to see the situation that thy developed disease, using **filter function to keep data that current_age < age_at_onset and have data with age at onset**. Next, since the original data used numeric data, including 0 and 1 to mention sex and APOE4, I regard 1 as male, 0 as female, and 1 as APOE4 carrier with 0 as APOE4 non-carrier,using **mutate and case_match functions**. After that, there are **`r nrow(baseline_df)`** observations in the merged dataset. The key variables are **`r names(baseline_df)`**.
 
 * How many participants were recruited, and of these how many develop MCI? 
 
@@ -138,11 +139,23 @@ prop_women = sum(total_baseline_df$sex == "female" & total_baseline_df$apoe4 == 
 The proportion of `r prop_women` women in the study are APOE4 carriers
 
 
-# Import the dataset of longitudinally
+# Import, clean, and tidy the dataset of mci_amyloid
 
 ```{r}
 amyloid_df =
   read_csv("data/mci_amyloid.csv", skip =1) |> 
-  janitor::clean_names()
+  janitor::clean_names() |> 
+    pivot_longer(
+    baseline:time_8,
+    names_to = "time",
+    values_to = "time_values",
+    names_prefix = "time_"
+  ) |> 
+  mutate(time = replace(time, time == "baseline", "0")
+)
 ```
 
+* Comment on the steps on the import process and the features of the dataset
+
+Firstly, I skip the first row as this line is not the titles of each columns, which
+is just a label that is not useful in R studio after importing, using **skip function**. Secondly, I use **pivot function** to make wide format to be long format, which is more convinent to read and compare data. Thirdly, I change the time descriptions by using numeric way, like 0, 2, 4, 6, 8, by using **mutate and replace function**. After doing that, there are **`r nrow(amyloid_df)`** observations in the merged dataset. The key variables are **`r names(amyloid_df)`**.
