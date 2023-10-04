@@ -77,7 +77,7 @@ According to the results of combine sheet, we can see that there are **`r nrow(c
 baseline_df =
   read_csv("data/MCI_baseline.csv", skip =1) |> 
   janitor::clean_names() |> 
-  filter(age_at_onset != ".") |> 
+  filter(current_age < age_at_onset & age_at_onset != ".") |> 
     mutate(
     sex = case_match(
       sex,
@@ -94,7 +94,8 @@ baseline_df =
 )
 ```
 
-* Discuss important steps in the import process and relevant features of the dataset.
+* Discuss important steps in the import process and relevant features of the dataset
+According to the important process, we can see that we filter all information that meet this study inclusion criteria. Firstly, we delete the age onset data which is larger than current because current age would not be large than age at onset since this study need those participants who get disease after joining the study. Secondly, when we omit the missing data with only showing data of , we filter those participants who lost follow-up during the study. These steps are important, because
 
 * How many participants were recruited, and of these how many develop MCI? 
 
@@ -103,6 +104,7 @@ the number of original data
 total_baseline_df =
   read_csv("data/MCI_baseline.csv", skip =1) |> 
   janitor::clean_names() |> 
+  filter (current_age < age_at_onset | age_at_onset == ".") |> 
     mutate(
     sex = case_match(
       sex,
@@ -122,12 +124,13 @@ There are `r nrow(total_baseline_df)` participants that were recruited, and `r n
 
 * What is the average baseline age? 
 ```{r}
-baseline_df$age_at_onset = as.numeric(baseline_df$age_at_onset)
+baseline_df$age_at_onset = as.numeric(baseline_df$current_age)
 ```
 
-The average baseline age is `r mean(baseline_df$age_at_onset)`. The proportion of women in the study are APOE4 carriers
+The average baseline age is `r mean(baseline_df$current_age)`. The proportion of women in the study are APOE4 carriers
 
 * What proportion of women in the study are APOE4 carriers?
+
 ```{r}
 prop_women = sum(total_baseline_df$sex == "female" & total_baseline_df$apoe4 == "APOE4_carrier") / sum(total_baseline_df$sex == "female")
 ```
