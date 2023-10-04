@@ -118,7 +118,7 @@ total_baseline_df =
       )
 )
 ```
-There are `r nrow(total_baseline_df)` participants that were recruited, and `r nrow(baseline_df)`of these develop MCI.
+There are `r nrow(total_baseline_df)` participants that were recruited, and `r nrow(baseline_df)` of these develop MCI.
 
 * What is the average baseline age? 
 ```{r}
@@ -133,3 +133,13 @@ prop_women = sum(total_baseline_df$sex == "female" & total_baseline_df$apoe4 == 
 ```
 
 The proportion of `r prop_women` women in the study are APOE4 carriers
+
+
+# Import the dataset of longitudinally
+
+```{r}
+amyloid_df =
+  read_csv("data/mci_amyloid.csv", skip =1) |> 
+  janitor::clean_names()
+```
+
