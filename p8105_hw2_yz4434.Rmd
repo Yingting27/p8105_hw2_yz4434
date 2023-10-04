@@ -70,9 +70,9 @@ total_cigarettes = filter(gwy_trash_wheel_df, year == "2021", month == "July")
 * Descriptions:
 According to the results of combine sheet, we can see that there are **`r nrow(combine_sheet_df)` rows**, with **`r ncol(combine_sheet_df)` columns** in total. The key variables include **`r names(combine_sheet_df)`**. The total weight of trash collected by Professor Trash Wheel is **`r sum(prof_trash_wheel_df$weight_tons)`**. The total number of cigarette butts collected by Gwynnda in July of 2021 is **`r sum(total_cigarettes$cigarette_butts)`**
 
-## Question 3
+# Question 3
 
-# Import dataset
+## Import dataset
 ```{r}
 baseline_df =
   read_csv("data/MCI_baseline.csv", skip =1) |> 
@@ -94,4 +94,42 @@ baseline_df =
 )
 ```
 
-* Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers?
+* Discuss important steps in the import process and relevant features of the dataset.
+
+* How many participants were recruited, and of these how many develop MCI? 
+
+the number of original data
+```{r}
+total_baseline_df =
+  read_csv("data/MCI_baseline.csv", skip =1) |> 
+  janitor::clean_names() |> 
+    mutate(
+    sex = case_match(
+      sex,
+      1 ~ "male",
+      0 ~ "female"
+      )
+) |> 
+    mutate(
+    apoe4 = case_match(
+        apoe4,
+        1 ~ "APOE4_carrier",
+        0 ~ "APOE4_non_carrier"
+      )
+)
+```
+There are `r nrow(total_baseline_df)` participants that were recruited, and `r nrow(baseline_df)`of these develop MCI.
+
+* What is the average baseline age? 
+```{r}
+baseline_df$age_at_onset = as.numeric(baseline_df$age_at_onset)
+```
+
+The average baseline age is `r mean(baseline_df$age_at_onset)`. The proportion of women in the study are APOE4 carriers
+
+* What proportion of women in the study are APOE4 carriers?
+```{r}
+prop_women = sum(total_baseline_df$sex == "female" & total_baseline_df$apoe4 == "APOE4_carrier") / sum(total_baseline_df$sex == "female")
+```
+
+The proportion of `r prop_women` women in the study are APOE4 carriers
