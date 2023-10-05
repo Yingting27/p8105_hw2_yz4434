@@ -227,7 +227,7 @@ mci_difference1 = anti_join(amyloid_df, baseline_df, by = "id")
 mci_difference2 = anti_join(baseline_df, amyloid_df, by = "id")
 ```
 
-There are **`r nrow(mci_difference1)`** observations in amyloid datasets, with **`r nrow(mci_difference2)`** observations in baseline datasets.
+There are **`r (nrow(mci_difference1)/5)`** observations in only the amyloid datasets, with **`r nrow(mci_difference2)`** observations in only the baseline datasets.
 
 * Export the result as a CSV to your data directory.
 ```{r}
