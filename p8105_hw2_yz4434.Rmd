@@ -143,7 +143,7 @@ According to the results of combine sheet, we can see that there are **`r nrow(c
 baseline_df =
   read_csv("data/MCI_baseline.csv", skip =1) |> 
   janitor::clean_names() |> 
-  filter(current_age < age_at_onset & age_at_onset != ".") |> 
+  filter (current_age < age_at_onset | age_at_onset == ".") |> 
     mutate(
     sex = case_match(
       sex,
@@ -165,29 +165,11 @@ baseline_df =
 At first, I delete the first row as this is label but not data, which is not contained variable names for each column, using **skip function**. Then, I omit the data of those participants who didn't meet the inclusion criteria (the data of current ages are larger than the data of age at onset and those who don't develop MCI), since the study need to follow up participants and to see the situation that thy developed disease, using **filter function to keep data that current_age < age_at_onset and have data with age at onset**. Next, since the original data used numeric data, including 0 and 1 to mention sex and APOE4, I regard 1 as male, 0 as female, and 1 as APOE4 carrier with 0 as APOE4 non-carrier,using **mutate and case_match functions**. After that, there are **`r nrow(baseline_df)`** observations in the merged dataset. The key variables are **`r names(baseline_df)`**.
 
 * How many participants were recruited, and of these how many develop MCI? 
-
-the number of original data
 ```{r}
-total_baseline_df =
-  read_csv("data/MCI_baseline.csv", skip =1) |> 
-  janitor::clean_names() |> 
-  filter (current_age < age_at_onset | age_at_onset == ".") |> 
-    mutate(
-    sex = case_match(
-      sex,
-      1 ~ "male",
-      0 ~ "female"
-      )
-) |> 
-    mutate(
-    apoe4 = case_match(
-        apoe4,
-        1 ~ "APOE4_carrier",
-        0 ~ "APOE4_non_carrier"
-      )
-)
+baseline_2 = filter(baseline_df, age_at_onset != ".")
 ```
-There are **`r nrow(total_baseline_df)`** participants that were recruited, and **`r nrow(baseline_df)`** of these develop MCI.
+
+There are **`r nrow(baseline_df)`** participants that were recruited, and **`r nrow(baseline_2)`** of these develop MCI.
 
 * What is the average baseline age? 
 ```{r}
@@ -199,7 +181,7 @@ The average baseline age is **`r mean(baseline_df$current_age)`**. The proportio
 * What proportion of women in the study are APOE4 carriers?
 
 ```{r}
-prop_women = sum(total_baseline_df$sex == "female" & total_baseline_df$apoe4 == "APOE4_carrier") / sum(total_baseline_df$sex == "female")
+prop_women = sum(baseline_df$sex == "female" & baseline_df$apoe4 == "APOE4_carrier") / sum(baseline_df$sex == "female")
 ```
 
 The proportion of **`r prop_women`** women in the study are APOE4 carriers
