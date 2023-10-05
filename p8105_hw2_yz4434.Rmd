@@ -121,14 +121,14 @@ total_baseline_df =
       )
 )
 ```
-There are `r nrow(total_baseline_df)` participants that were recruited, and `r nrow(baseline_df)` of these develop MCI.
+There are **`r nrow(total_baseline_df)`** participants that were recruited, and **`r nrow(baseline_df)`** of these develop MCI.
 
 * What is the average baseline age? 
 ```{r}
 baseline_df$age_at_onset = as.numeric(baseline_df$current_age)
 ```
 
-The average baseline age is `r mean(baseline_df$current_age)`. The proportion of women in the study are APOE4 carriers
+The average baseline age is **`r mean(baseline_df$current_age)`**. The proportion of women in the study are APOE4 carriers
 
 * What proportion of women in the study are APOE4 carriers?
 
@@ -151,6 +151,7 @@ amyloid_df =
     values_to = "time_values",
     names_prefix = "time_"
   ) |> 
+  rename(id = study_id) |> 
   mutate(time = replace(time, time == "baseline", "0")
 )
 ```
@@ -158,4 +159,31 @@ amyloid_df =
 * Comment on the steps on the import process and the features of the dataset
 
 Firstly, I skip the first row as this line is not the titles of each columns, which
-is just a label that is not useful in R studio after importing, using **skip function**. Secondly, I use **pivot function** to make wide format to be long format, which is more convinent to read and compare data. Thirdly, I change the time descriptions by using numeric way, like 0, 2, 4, 6, 8, by using **mutate and replace function**. After doing that, there are **`r nrow(amyloid_df)`** observations in the merged dataset. The key variables are **`r names(amyloid_df)`**.
+is just a label that is not useful in R studio after importing, using **skip function**. Secondly, I use **pivot function** to make wide format to be long format, which is more convenient to read and compare data. Thirdly, I change the time descriptions by using numeric way, like 0, 2, 4, 6, 8, by using **mutate and replace function**. After doing that, there are **`r nrow(amyloid_df)`** observations in the merged dataset. The key variables are **`r names(amyloid_df)`**.
+
+
+# Combine datasets
+
+* Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset
+```{r}
+mci_combine = 
+  inner_join(baseline_df, amyloid_df, by = "id") |>
+  janitor::clean_names()
+```
+
+* Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings.
+
+```{r}
+mci_difference1 = anti_join(amyloid_df, baseline_df, by = "id")
+mci_difference2 = anti_join(baseline_df, amyloid_df, by = "id")
+```
+
+There are **`r nrow(mci_difference1)`** observations in amyloid datasets, with **`r nrow(mci_difference2)`** observations in baseline datasets.
+
+* Export the result as a CSV to your data directory.
+```{r}
+write.csv(mci_combine, "data/mci_combine.csv")
+```
+
+
+
